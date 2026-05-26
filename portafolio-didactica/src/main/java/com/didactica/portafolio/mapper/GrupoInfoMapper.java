@@ -2,10 +2,12 @@ package com.didactica.portafolio.mapper;
 
 import com.didactica.portafolio.dto.request.GrupoInfoRequest;
 import com.didactica.portafolio.dto.response.GrupoInfoResponse;
+import com.didactica.portafolio.entity.GrupoIntegrante;
 import com.didactica.portafolio.entity.GrupoInfo;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 @Component
 public class GrupoInfoMapper {
@@ -15,7 +17,9 @@ public class GrupoInfoMapper {
                 .titulo(grupoInfo.getTitulo())
                 .descripcion(grupoInfo.getDescripcion())
                 .imagenUrl(grupoInfo.getImagenUrl())
-                .integrantes(new ArrayList<>(grupoInfo.getIntegrantes()))
+                .integrantes(grupoInfo.getIntegrantes().stream()
+                        .map(this::toIntegranteResponse)
+                        .toList())
                 .activo(grupoInfo.getActivo())
                 .creadoEn(grupoInfo.getCreadoEn())
                 .actualizadoEn(grupoInfo.getActualizadoEn())
@@ -27,6 +31,25 @@ public class GrupoInfoMapper {
         grupoInfo.setDescripcion(request.getDescripcion());
         grupoInfo.setImagenUrl(request.getImagenUrl());
         grupoInfo.setActivo(request.getActivo());
-        grupoInfo.setIntegrantes(request.getIntegrantes() == null ? new ArrayList<>() : new ArrayList<>(request.getIntegrantes()));
+        grupoInfo.setIntegrantes(request.getIntegrantes() == null ? new ArrayList<>() : request.getIntegrantes().stream()
+                .filter(integrante -> integrante.getNombre() != null && !integrante.getNombre().isBlank())
+                .map(this::toIntegrante)
+                .collect(Collectors.toCollection(ArrayList::new)));
+    }
+
+    private GrupoInfoResponse.GrupoIntegranteResponse toIntegranteResponse(GrupoIntegrante integrante) {
+        return GrupoInfoResponse.GrupoIntegranteResponse.builder()
+                .nombre(integrante.getNombre())
+                .descripcion(integrante.getDescripcion())
+                .imagenUrl(integrante.getImagenUrl())
+                .build();
+    }
+
+    private GrupoIntegrante toIntegrante(GrupoInfoRequest.GrupoIntegranteRequest request) {
+        return GrupoIntegrante.builder()
+                .nombre(request.getNombre())
+                .descripcion(request.getDescripcion())
+                .imagenUrl(request.getImagenUrl())
+                .build();
     }
 }

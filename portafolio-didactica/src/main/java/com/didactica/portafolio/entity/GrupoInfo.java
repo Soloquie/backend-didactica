@@ -32,9 +32,8 @@ public class GrupoInfo {
     @Builder.Default
     @ElementCollection
     @CollectionTable(name = "grupo_integrante", joinColumns = @JoinColumn(name = "grupo_info_id"))
-    @Column(name = "nombre")
     @OrderColumn(name = "orden")
-    private List<String> integrantes = new ArrayList<>();
+    private List<GrupoIntegrante> integrantes = new ArrayList<>();
 
     @Column(name = "creado_en", updatable = false)
     private Instant creadoEn;

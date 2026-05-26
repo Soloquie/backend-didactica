@@ -12,4 +12,6 @@ public interface GrupoInfoService {
     GrupoInfoResponse update(GrupoInfoRequest request);
 
     GrupoInfoResponse uploadImage(MultipartFile archivo);
+
+    GrupoInfoResponse uploadMemberImage(Integer index, MultipartFile archivo);
 }

@@ -2,7 +2,9 @@ package com.didactica.portafolio.service.impl;
 
 import com.didactica.portafolio.dto.request.GrupoInfoRequest;
 import com.didactica.portafolio.dto.response.GrupoInfoResponse;
+import com.didactica.portafolio.entity.GrupoIntegrante;
 import com.didactica.portafolio.entity.GrupoInfo;
+import com.didactica.portafolio.exception.BadRequestException;
 import com.didactica.portafolio.mapper.GrupoInfoMapper;
 import com.didactica.portafolio.repository.GrupoInfoRepository;
 import com.didactica.portafolio.service.interfaces.CloudinaryService;
@@ -62,14 +64,40 @@ public class GrupoInfoServiceImpl implements GrupoInfoService {
         return mapper.toResponse(repository.save(grupoInfo));
     }
 
+    @Override
+    @Transactional
+    public GrupoInfoResponse uploadMemberImage(Integer index, MultipartFile archivo) {
+        var grupoInfo = repository.findFirstByOrderByIdAsc()
+                .orElseGet(this::createDefault);
+        if (index == null || index < 0 || index >= grupoInfo.getIntegrantes().size()) {
+            throw new BadRequestException("Integrante no encontrado");
+        }
+        var upload = cloudinaryService.upload(archivo, "portafolio-didactica/integrantes");
+        grupoInfo.getIntegrantes().get(index).setImagenUrl(upload.getUrl());
+        return mapper.toResponse(repository.save(grupoInfo));
+    }
+
     private GrupoInfo createDefault() {
         var grupoInfo = GrupoInfo.builder()
                 .titulo("¿Quiénes somos?")
-                .descripcion("Somos un grupo de estudiantes comprometidos con la construcción de experiencias didácticas significativas. Este portafolio reúne nuestras actividades, reflexiones y aprendizajes como evidencia del trabajo colaborativo desarrollado durante el curso.")
+                .descripcion("Equipo de trabajo del portafolio de Didáctica.")
                 .imagenUrl(DEFAULT_IMAGE)
-                .integrantes(List.of("Leonardo", "Oveimar", "Maria", "Veronica"))
+                .integrantes(List.of(
+                        defaultMember("Leonardo"),
+                        defaultMember("Oveimar"),
+                        defaultMember("Maria"),
+                        defaultMember("Veronica")
+                ))
                 .activo(true)
                 .build();
         return repository.save(grupoInfo);
+    }
+
+    private GrupoIntegrante defaultMember(String nombre) {
+        return GrupoIntegrante.builder()
+                .nombre(nombre)
+                .descripcion("Integrante del equipo de trabajo del portafolio de Didáctica.")
+                .imagenUrl(DEFAULT_IMAGE)
+                .build();
     }
 }

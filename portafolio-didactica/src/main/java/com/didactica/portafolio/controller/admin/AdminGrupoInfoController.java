@@ -30,4 +30,9 @@ public class AdminGrupoInfoController {
     public GrupoInfoResponse uploadImage(@RequestPart("archivo") MultipartFile archivo) {
         return grupoInfoService.uploadImage(archivo);
     }
+
+    @PostMapping(value = "/integrantes/{index}/imagen", consumes = {"multipart/form-data"})
+    public GrupoInfoResponse uploadMemberImage(@PathVariable Integer index, @RequestPart("archivo") MultipartFile archivo) {
+        return grupoInfoService.uploadMemberImage(index, archivo);
+    }
 }

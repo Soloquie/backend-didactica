@@ -14,6 +14,13 @@ public class GrupoInfoRequest {
 
     private String descripcion;
     private String imagenUrl;
-    private List<String> integrantes;
+    private List<GrupoIntegranteRequest> integrantes;
     private Boolean activo;
+
+    @Data
+    public static class GrupoIntegranteRequest {
+        private String nombre;
+        private String descripcion;
+        private String imagenUrl;
+    }
 }

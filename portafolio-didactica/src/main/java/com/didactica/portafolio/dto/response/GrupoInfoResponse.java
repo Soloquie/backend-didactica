@@ -13,8 +13,16 @@ public class GrupoInfoResponse {
     private String titulo;
     private String descripcion;
     private String imagenUrl;
-    private List<String> integrantes;
+    private List<GrupoIntegranteResponse> integrantes;
     private Boolean activo;
     private Instant creadoEn;
     private Instant actualizadoEn;
+
+    @Data
+    @Builder
+    public static class GrupoIntegranteResponse {
+        private String nombre;
+        private String descripcion;
+        private String imagenUrl;
+    }
 }
