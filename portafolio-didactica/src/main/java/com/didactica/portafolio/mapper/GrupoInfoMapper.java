@@ -31,10 +31,12 @@ public class GrupoInfoMapper {
         grupoInfo.setDescripcion(request.getDescripcion());
         grupoInfo.setImagenUrl(request.getImagenUrl());
         grupoInfo.setActivo(request.getActivo());
-        grupoInfo.setIntegrantes(request.getIntegrantes() == null ? new ArrayList<>() : request.getIntegrantes().stream()
+        var integrantes = request.getIntegrantes() == null ? new ArrayList<GrupoIntegrante>() : request.getIntegrantes().stream()
                 .filter(integrante -> integrante.getNombre() != null && !integrante.getNombre().isBlank())
                 .map(this::toIntegrante)
-                .collect(Collectors.toCollection(ArrayList::new)));
+                .collect(Collectors.toCollection(ArrayList::new));
+        grupoInfo.getIntegrantes().clear();
+        grupoInfo.getIntegrantes().addAll(integrantes);
     }
 
     private GrupoInfoResponse.GrupoIntegranteResponse toIntegranteResponse(GrupoIntegrante integrante) {
